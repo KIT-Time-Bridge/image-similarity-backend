@@ -37,6 +37,7 @@ class VectorRepository:
                 filters=search_filter
             )
             is_found = count_result.count > 0
+            # 0보다 큰 경우 True
             if is_found:
                 logger.info(f"missingID '{missingId}' was found.")
             else:
@@ -72,16 +73,28 @@ class VectorRepository:
             logger.error(f"Failed to save image for ID: {e}.", exc_info=True)
             return False
 
-    # update 추가
+    # async def delete(self, missingId: str) -> bool:
+    #     self.client.delete(
+    #         collection_name=self.collection_name,
+    #         points_selector=models.PointIdsList(points=[missingId]),
+    #         wait = True
+    #     )
+    #     print("{} 이미지 벡터 삭제 완료".format(missingId))
+    #     return True
+
 
     async def delete(self, missingId: str) -> bool:
-        self.client.delete(
-            collection_name=self.collection_name,
-            points_selector=models.PointIdsList(points=[missingId]),
-            wait = True
-        )
-        print("{} 이미지 벡터 삭제 완료".format(missingId))
-        return True
+        try:        
+            self.client.delete(
+                collection_name=self.collection_name,
+                points_selector=models.PointIdsList(points=[missingId]),
+                wait = True
+            )
+            print("{} 이미지 벡터 삭제 완료".format(missingId))
+            return True
+        except Exception as e:
+            logger.error(f"Failed to save image for ID: {e}.", exc_info=True)
+            return False
 
     async def get_data_for_comparison(self, payload: dict) -> dict:
         '''

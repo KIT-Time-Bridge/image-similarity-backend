@@ -20,8 +20,8 @@ class SimilarityService:
         if self.repository.is_exist(missingId):
             raise HTTPException(status_code=409, detail="이미 존재하는 ID입니다.")
         embedding_vector = self.inference.get_embedding(image_bytes=image_bytes) # np.narray
-        # if embedding_vector is None:
-        #     raise HTTPException(status_code=400, detail="이미지에서 얼굴을 찾지 못해 등록에 실패했습니다.")
+        if embedding_vector is None:
+            raise HTTPException(status_code=400, detail="이미지에서 얼굴을 찾지 못해 등록에 실패했습니다.")
         payload = {"missingId": missingId, "gender_id": gender, "type": type}
         await self.repository.save(vector=embedding_vector,payload=payload)
         return True
